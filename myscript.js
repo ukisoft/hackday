@@ -11,9 +11,7 @@ function draw() {
 	var teamMaxNumber = 8;
 	
 	var iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
-	
-	//var canvas = prepareCanvas();
-	
+		
 	//stageを描写
 	showStageArea(stageWidth, stageHeight);
 	
@@ -22,10 +20,7 @@ function draw() {
 		showIcon(stageWidth, stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
 	}
 	
-	//描写の種類（2dしかない）
-	//var ctx = canvas.getContext('2d');
 	
-	//ctx.strokeRect(10, 10, 50, 50);
 }
 
 function prepareCanvas() {
@@ -52,20 +47,24 @@ function showStageArea(stageWidth, stageHeight) {
 
 function showIcon(stageWidth, stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber) {
 	var iconImg = new Image();
-	iconImg.src = "icon" + teamNumber + ".jpg";
-	//if (iconImg.FileExists) {
-		var canvas = prepareCanvas();
-		var icon = canvas.getContext('2d');
+	//var iconFilePath = new iconImg.File("icon" + teamNumber + ".jpg");
+	//if (iconFilePath.exists) {
+	
 		
-		var positionY = stageHeight * (8/10) + 10;
-		var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber;
-		var iconHeight = iconImg.height * (iconWidth / iconImg.width);
-				
-		iconImg.onload = function() {
-			icon.drawImage(iconImg, positionX, positionY, iconWidth, iconHeight);
+		iconImg.src = "icon" + teamNumber + ".jpg";
+		//if (iconImg.FileExists) {
+			var canvas = prepareCanvas();
+			var icon = canvas.getContext('2d');
+			
+			var positionY = stageHeight * (8/10) + 10;
+			var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber;
+			var iconHeight = iconImg.height * (iconWidth / iconImg.width);
+					
+			iconImg.onload = function() {
+				icon.drawImage(iconImg, positionX, positionY, iconWidth, iconHeight);
 		}
-	/*}
-	else {
+	//}
+	/*else {
 		var canvas = prepareCanvas();
 		var context = canvas.getContext('2d');
 		context.font = "20pt Arial";
@@ -73,3 +72,5 @@ function showIcon(stageWidth, stageHeight, iconSideSpace, iconWidth, iconIconSpa
 		context.fillText(teamNumberPlus + "班", positionX, positionY);
 	}*/
 }
+
+
