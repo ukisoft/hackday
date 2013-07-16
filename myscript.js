@@ -26,13 +26,47 @@ function draw() {
 	}
 	
 	//バーを表示...test
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 10; j++) {
-			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, i, j);
-		}
+	doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0);
+		
+		
+		
+		//console.log("aaa" + i);
+		//setTimeout(showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, i), 1 * 1000);
+}
+
+//blockRoop
+function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow) {
+	var timerFlg = false;
+	if (timerFlg == false) {
+		setTimeout( function() {
+			timerFlg = true;
+			showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1);
+			doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1);//得点のMAXを超えたら止める。
+			timerFlg=false;
+		}, 2000);
+		return;		
 	}
 }
 
+//
+function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow) {
+	for (j = 0; j < 10; j++) {
+		console.log("iii" + j);
+		showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+	}
+}
+
+function showBarBlock (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, blockColumn) {
+	var block = prepareCanvas();
+	
+	var positionY = stageHeight * (8/10) - blockHeight * blockRow;
+	var positionX = blockSideSpace + (blockWidth + blockBlockSpace) * blockColumn;
+	
+	block.strokeRect(positionX, positionY, blockWidth, blockHeight);
+}
+
+
+//prepareCanvas
 function prepareCanvas() {
 	//htmlの要素を確認。なければエラー。
 	var canvas = document.getElementById('mycanvas');
@@ -41,6 +75,7 @@ function prepareCanvas() {
 	return rtnCanvas;
 }
 
+//stage
 function showStageArea(stageWidth, stageHeight) {
 	
 	//外枠（削除予定）
@@ -55,6 +90,7 @@ function showStageArea(stageWidth, stageHeight) {
 	baseline.stroke();
 }
 
+//icon
 function showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber) {
 	var iconImg = new Image();		
 		iconImg.src = "icon" + teamNumber + ".jpg";
@@ -77,11 +113,3 @@ function showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumb
 	}*/
 }
 
-function showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, blockColumn) {
-	var block = prepareCanvas();
-	
-	var positionY = stageHeight * (8/10) - blockHeight * (blockRow + 1);
-	var positionX = blockSideSpace + (blockWidth + blockBlockSpace) * blockColumn;
-	
-	block.strokeRect(positionX, positionY, blockWidth, blockHeight);
-}
