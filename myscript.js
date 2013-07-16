@@ -4,9 +4,20 @@ window.onload = function() {
 }
 
 function draw() {
+	var scoreData;
+	
+	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=hoge",
+  	function(data) {
+		scoreData = data;
+  	});
+	
+	scoreData = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
+	
+	console.log(scoreData[1]["score"]);
+	
 	var stageWidth = 800;
 	var stageHeight = 600;
-	var teamMaxNumber = 8;
+	var teamMaxNumber = scoreData.length;
 	
 	var iconSideSpace = 30;
 	var iconWidth = 50;
@@ -14,7 +25,7 @@ function draw() {
 	
 	var blockSideSpace = 30;
 	var blockWidth = 50;
-	var blockHeight = 30;
+	var blockHeight = 20;
 	var blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
 	
 	//stageを描写
