@@ -4,44 +4,42 @@ window.onload = function() {
 }
 
 var restTeamNumber;
+var winnerTeamName;
 
 function draw() {
-	var scoreData;
 	
-	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=hoge",
+	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=?",
   	function(data) {
-		scoreData = data;
-  	});
-	
-	scoreData = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
+		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
 		
-	var stageWidth = 800;
-	var stageHeight = 600;
-	var teamMaxNumber = scoreData.length;
-	restTeamNumber = scoreData.length;
-	
-	var iconSideSpace = 30;
-	var iconWidth = 50;
-	var iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
-	
-	var blockSideSpace = 30;
-	var blockWidth = 50;
-	var blockHeight = 20;
-	var blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
-	
-	//stageを描写
-	showStageArea(stageWidth, stageHeight);
-	
-	//icon表示
-	for (i = 0; i < teamMaxNumber; i++) {
-		//showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
-		showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i, scoreData);
-		console.log(i);
-	}
-	
-	console.log("kiteru?");
-	//バーを表示...test
-	doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0, scoreData);
+		var stageWidth = 800;
+		var stageHeight = 600;
+		var teamMaxNumber = data.length;
+		restTeamNumber = data.length;
+		winnerTeamName = "";
+		
+		var iconSideSpace = 30;
+		var iconWidth = 50;
+		var iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
+		
+		var blockSideSpace = 30;
+		var blockWidth = 50;
+		var blockHeight = 20;
+		var blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
+		
+		//stageを描写
+		showStageArea(stageWidth, stageHeight);
+		
+		//icon表示
+		for (i = 0; i < teamMaxNumber; i++) {
+			//showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
+			showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i, data);
+		}
+		
+		console.log("kiteru?");
+		//バーを表示...test
+		doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0, data);
+  	});
 }
 
 //teamName
@@ -55,8 +53,6 @@ function showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, team
 		var nameTextN = "";
 		for (k = 0; k < scoreData[teamNumber]["name"].length; k++) {
 			nameTextN += scoreData[teamNumber]["name"].charAt(k) + "¥n";
-			console.log(scoreData[teamNumber]["name"].charAt(k));
-			console.log(nameTextN);
 		}
 		
 		var splittedNameText = nameTextN.split('¥n');
@@ -65,8 +61,6 @@ function showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, team
 		splittedNameText.forEach(function(text, i) {
     			nameText.fillText(text, positionX, positionY + lineHeight * i);
 		});
-		//nameText.fillText(scoreData[teamNumber]["name"], positionX, positionY);
-		//nameText.rotate(90 * Math.PI / 180);
 }
 
 
