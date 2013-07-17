@@ -9,6 +9,15 @@ var winnerTeamName;
 var stageWidth = 800;
 var stageHeight = 600;
 
+var iconSideSpace = 30;
+var iconWidth = 50;
+var iconIconSpace;
+
+var blockSideSpace = 30;
+var blockWidth = 50;
+var blockHeight = 20;
+var blockBlockSpace;
+
 var scoreData;
 
 
@@ -18,35 +27,31 @@ function draw() {
   	function(data) {
 		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
 		
+		scoreData = data;
+		
 		teamMaxNumber = data.length;
 		restTeamNumber = data.length;
 		winnerTeamName = "";
 		
-		var iconSideSpace = 30;
-		var iconWidth = 50;
-		var iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
-		
-		var blockSideSpace = 30;
-		var blockWidth = 50;
-		var blockHeight = 20;
-		var blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
+		iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
+		blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
 		
 		//stageを描写
-		showStageArea(stageWidth, stageHeight);
+		showStageArea();
 		
 		//icon表示
 		for (i = 0; i < teamMaxNumber; i++) {
 			//showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
-			showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i, data);
+			showTeamName(i);
 		}
 		
 		//バーを表示...test
-		doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0, data);
+		doBlockRoop (0);
   	});
 }
 
 //teamName
-function showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber, scoreData) {
+function showTeamName(teamNumber) {
 		var nameText = prepareCanvas();
 		nameText.font = "20pt Arial";
 
@@ -66,20 +71,19 @@ function showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, team
 		});
 }
 
-
 //blockRoop
-function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData) {
+function doBlockRoop (blockRow) {
 	var timerFlg = false;
 	if (timerFlg == false) {
 		setTimeout( function() {
 			timerFlg = true;
 			if (restTeamNumber == teamMaxNumber) {
-				showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData);
-				doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData);//得点のMAXを超えたら止める。
+				showBarBlockRow(blockRow);
+				doBlockRoop(blockRow);//得点のMAXを超えたら止める。
 			}
 			else if (restTeamNumber > 0) {
-				showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);
-				doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);//得点のMAXを超えたら止める。
+				showBarBlockRow(blockRow + 1);
+				doBlockRoop(blockRow + 1);//得点のMAXを超えたら止める。
 			}
 			timerFlg=false;
 		}, 1 * 1000);
@@ -87,7 +91,7 @@ function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, bloc
 	}
 }
 
-function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData) {
+function showBarBlockRow (blockRow) {
 	for (j = 0; j < scoreData.length; j++) {
 		if (scoreData[j]["score"] == blockRow) {
 			restTeamNumber--;
@@ -98,10 +102,10 @@ function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, 
 					winnerTeamName = scoreData[j]["name"];
 					id = setTimeout(showWinnerName, 2 * 1000);
 				}
-			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+			showBarBlock(blockRow, j);
 		}
 		else if (scoreData[j]["score"] > blockRow) {
-			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+			showBarBlock(blockRow, j);
 		}
 	}
 }
@@ -122,7 +126,7 @@ function showWinnerName() {
 	nameText.fillText("優勝：" + winnerTeamName, positionX, positionY);
 }
 
-function showBarBlock (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, blockColumn) {
+function showBarBlock (blockRow, blockColumn) {
 	var block = prepareCanvas();
 	
 	var positionY = stageHeight * (8/10) - blockHeight * (blockRow + 1);
@@ -135,8 +139,6 @@ function showBarBlock (stageHeight, blockSideSpace, blockWidth, blockHeight, blo
 	block.strokeRect(positionX, positionY, blockWidth, blockHeight);
 }
 
-
-//prepareCanvas
 function prepareCanvas() {
 	//htmlの要素を確認。なければエラー。
 	var canvas = document.getElementById('mycanvas');
@@ -145,8 +147,7 @@ function prepareCanvas() {
 	return rtnCanvas;
 }
 
-//stage
-function showStageArea(stageWidth, stageHeight) {
+function showStageArea() {
 	
 	//外枠（削除予定）
 	var stageArea = prepareCanvas();
@@ -160,7 +161,6 @@ function showStageArea(stageWidth, stageHeight) {
 	baseline.stroke();
 }
 
-//icon
 function showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber) {
 	var iconImg = new Image();		
 		iconImg.src = "icon" + teamNumber + ".jpg";
