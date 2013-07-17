@@ -46,8 +46,8 @@ function draw() {
 			showTeamName(i);
 		}
 		
-		//バーを表示...test
-		doBlockRoop (0);
+		//バーを表示
+		doBlockRoop(0);
   	});
 }
 
@@ -115,11 +115,6 @@ function showWinnerName() {
 	
 	var nameText = prepareCanvas();
 	nameText.font = "34pt Arial";
-	nameText.fillStyle = 'rgba(255, 0, 0, 1)';
-  	nameText.shadowColor = 'gray';
-  	nameText.shadowOffsetX = 2;
-  	nameText.shadowOffsetY = 2;
-  	nameText.shadowBlur = 2;
 	
 	var sideSpace = 30;
 	var topSpace = stageHeight * (1/3);
@@ -128,6 +123,27 @@ function showWinnerName() {
 	var positionY = topSpace + lineHeigth;
 	var positionX = (stageWidth - lineHeigth * (winnerTeamName.length + 7)) / 2;
 	
+	var sideSpaceb = 20;
+	var topSpaceb = 10;
+	var positionYb = positionY - lineHeigth - topSpaceb / 2;
+	var positionXb = positionX - sideSpaceb;
+	var boardWidth = lineHeigth * (winnerTeamName.length + 7) + sideSpaceb * 2;
+	var boardHeight = lineHeigth + topSpaceb * 2;
+	
+	var backBoard = prepareCanvas();
+	backBoard.fillStyle = 'rgb(255, 255, 255)';
+	backBoard.shadowColor = 'gray';
+  	backBoard.shadowOffsetX = 2;
+  	backBoard.shadowOffsetY = 2;
+  	backBoard.shadowBlur = 2;
+	backBoard.fillRect(positionXb, positionYb, boardWidth, boardHeight);
+	backBoard.strokeRect(positionXb, positionYb, boardWidth, boardHeight);
+	
+	nameText.fillStyle = 'rgba(255, 0, 0, 1)';
+  	//nameText.shadowColor = 'gray';
+  	//nameText.shadowOffsetX = 2;
+  	//nameText.shadowOffsetY = 2;
+  	//nameText.shadowBlur = 2;
 	nameText.fillText("The Winner is " + winnerTeamName, positionX, positionY);
 }
 
