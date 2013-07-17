@@ -3,6 +3,8 @@ window.onload = function() {
 	draw();
 }
 
+var restTeamNumber;
+
 function draw() {
 	var scoreData;
 	
@@ -12,12 +14,11 @@ function draw() {
   	});
 	
 	scoreData = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
-	
-	console.log(scoreData[1]["score"]);
-	
+		
 	var stageWidth = 800;
 	var stageHeight = 600;
 	var teamMaxNumber = scoreData.length;
+	restTeamNumber = scoreData.length;
 	
 	var iconSideSpace = 30;
 	var iconWidth = 50;
@@ -33,37 +34,67 @@ function draw() {
 	
 	//icon表示
 	for (i = 0; i < teamMaxNumber; i++) {
-		showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
+		//showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
+		showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i, scoreData);
+		console.log(i);
 	}
 	
+	console.log("kiteru?");
 	//バーを表示...test
-	doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0);
-		
-		
-		
-		//console.log("aaa" + i);
-		//setTimeout(showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, i), 1 * 1000);
+	doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0, scoreData);
 }
 
+//teamName
+function showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber, scoreData) {
+		var nameText = prepareCanvas();
+		nameText.font = "20pt Arial";
+
+		var positionY = stageHeight * (8/10) + 10 + 20;
+		var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber + 15;
+		
+		var nameTextN = "";
+		for (k = 0; k < scoreData[teamNumber]["name"].length; k++) {
+			nameTextN += scoreData[teamNumber]["name"].charAt(k) + "¥n";
+			console.log(scoreData[teamNumber]["name"].charAt(k));
+			console.log(nameTextN);
+		}
+		
+		var splittedNameText = nameTextN.split('¥n');
+		var lineHeight = nameText.measureText("あ").width;
+		
+		splittedNameText.forEach(function(text, i) {
+    			nameText.fillText(text, positionX, positionY + lineHeight * i);
+		});
+		//nameText.fillText(scoreData[teamNumber]["name"], positionX, positionY);
+		//nameText.rotate(90 * Math.PI / 180);
+}
+
+
 //blockRoop
-function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow) {
+function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData) {
 	var timerFlg = false;
 	if (timerFlg == false) {
 		setTimeout( function() {
 			timerFlg = true;
-			showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1);
-			doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1);//得点のMAXを超えたら止める。
+			if (restTeamNumber > 0) {
+				showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);
+				doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);//得点のMAXを超えたら止める。
+			}
 			timerFlg=false;
 		}, 2000);
 		return;		
 	}
 }
 
-//
-function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow) {
-	for (j = 0; j < 10; j++) {
-		console.log("iii" + j);
-		showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData) {
+	for (j = 0; j < scoreData.length; j++) {
+		if (scoreData[j]["score"] == blockRow) {
+			restTeamNumber--;
+			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+		}
+		else if (scoreData[j]["score"] > blockRow) {
+			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
+		}
 	}
 }
 
@@ -73,6 +104,10 @@ function showBarBlock (stageHeight, blockSideSpace, blockWidth, blockHeight, blo
 	var positionY = stageHeight * (8/10) - blockHeight * blockRow;
 	var positionX = blockSideSpace + (blockWidth + blockBlockSpace) * blockColumn;
 	
+	if (blockRow >= 5) {
+		block.fillStyle = 'rgb(255, 0, 0)';
+		block.fillRect(positionX, positionY, blockWidth, blockHeight);
+	}
 	block.strokeRect(positionX, positionY, blockWidth, blockHeight);
 }
 
