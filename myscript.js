@@ -97,7 +97,6 @@ function showBarBlockRow (blockRow) {
 			restTeamNumber--;
 			console.log("restTeamNumber" + restTeamNumber);
 				if (restTeamNumber == 0) {
-					console.log("ii");
 					//[aaaaa//同率がいないかチェック
 					winnerTeamName = scoreData[j]["name"];
 					id = setTimeout(showWinnerName, 2 * 1000);
@@ -111,19 +110,18 @@ function showBarBlockRow (blockRow) {
 }
 
 function showWinnerName() {
-	console.log("aa");
 	
 	var nameText = prepareCanvas();
 	nameText.font = "34pt Arial";
 	
 	var sideSpace = 30;
-	var topSpace = 200;
-	var lineHeight = nameText.measureText("あ").width;
+	var topSpace = stageHeight * (1/3);
+	var lineHeigth = nameText.measureText("あ").width;
 	
-	var positionY = sideSpace + lineHeight;
-	var positionX = topSpace;
+	var positionY = topSpace + lineHeigth;
+	var positionX = (stageWidth - lineHeigth * (winnerTeamName.length + 7)) / 2;
 	
-	nameText.fillText("優勝：" + winnerTeamName, positionX, positionY);
+	nameText.fillText("The Winner is " + winnerTeamName, positionX, positionY);
 }
 
 function showBarBlock (blockRow, blockColumn) {
