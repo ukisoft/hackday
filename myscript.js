@@ -5,7 +5,7 @@ window.onload = function() {
 
 var restTeamNumber;
 var teamMaxNumber;
-var winnerTeamName;
+var winnerTeamName = "";
 var stageWidth = 800;
 var stageHeight = 600;
 
@@ -26,23 +26,33 @@ function draw() {
 	
 	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=?",
   	function(data) {
-		data = [{name: "Absence", score: "8"},{name: "team2", score: "13"},{name: "チーム３", score: "15"},{name: "４番目のチーム", score: "20"},{name: "55555", score: "1"}];
+		data = [{name: "Absence", score: "16"},{name: "team2", score: "14"},{name: "チーム３", score: "14"},{name: "４番目のチーム", score: "14"},{name: "55555", score: "1"}];
 		
 		scoreData = data;
 		
 		teamMaxNumber = data.length;
 		restTeamNumber = data.length;
-		winnerTeamName = "";
 		
 		iconIconSpace = (stageWidth - (2 * iconSideSpace) - (teamMaxNumber * iconWidth)) / (teamMaxNumber - 1);
 		blockBlockSpace = (stageWidth - (2 * blockSideSpace) - (teamMaxNumber * blockWidth)) / (teamMaxNumber - 1);
 		
+		var topSpace = 30;
+		var maxPoint = 0;
+		for (var x = 0; x < scoreData.length; x++) {
+			console.log(scoreData[x]["score"]);
+			if (scoreData[x]["score"] > maxPoint) {
+				maxPoint = scoreData[x]["score"];
+			}
+		}
+		if (maxPoint * blockHeight > stageHeight * (8/10)) {
+			blockHeight = (stageHeight * (8/10) - topSpace) / maxPoint;
+		}
+		
 		//stageを描写
 		showStageArea();
 		
-		//icon表示
-		for (i = 0; i < teamMaxNumber; i++) {
-			//showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i);
+		//teamName表示
+		for (var i = 0; i < teamMaxNumber; i++) {
 			showTeamName(i);
 		}
 		
@@ -51,16 +61,21 @@ function draw() {
   	});
 }
 
-//teamName
 function showTeamName(teamNumber) {
 		var nameText = prepareCanvas();
-		nameText.font = "20pt Arial";
 
 		var positionY = stageHeight * (8/10) + 10 + 20;
-		var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber + 15;
+		var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber + 20;
+		
+		var fontSizeDefault = 20;
+		do {
+			nameText.font = fontSizeDefault + "pt Arial";
+			var lineHeigth = nameText.measureText("あ").width;
+			fontSizeDefault--;
+		} while (stageHeight * (1.5/10) < lineHeigth * scoreData[teamNumber]["name"].length);
 		
 		var nameTextN = "";
-		for (k = 0; k < scoreData[teamNumber]["name"].length; k++) {
+		for (var k = 0; k < scoreData[teamNumber]["name"].length; k++) {
 			nameTextN += scoreData[teamNumber]["name"].charAt(k) + "¥n";
 		}
 		
@@ -72,7 +87,6 @@ function showTeamName(teamNumber) {
 		});
 }
 
-//blockRoop
 function doBlockRoop (blockRow) {
 	var timerFlg = false;
 	if (timerFlg == false) {
@@ -94,40 +108,85 @@ function doBlockRoop (blockRow) {
 }
 
 function showBarBlockRow (blockRow) {
-	for (j = 0; j < scoreData.length; j++) {
+	for (var j = 0; j < scoreData.length; j++) {
 		if (scoreData[j]["score"] == blockRow) {
 			restTeamNumber--;
 				if (restTeamNumber == 0) {
-					//[aaaaa//同率がいないかチェック
-					winnerTeamName = scoreData[j]["name"];
-					id = setTimeout(showWinnerName, 2 * 1000);
+					//同率がいないかチェック
+					var sameScoreCount = 0;
+					for (var m = 0; m < scoreData.length; m++) {
+						if (scoreData[m]["score"] == scoreData[j]["score"]) {
+							sameScoreCount++;
+						}
+					}
+					
+					if (sameScoreCount <= 1) {
+						winnerTeamName = scoreData[j]["name"];
+						id = setTimeout(showWinnerName, 2 * 1000);
+					}
+					else {
+						id = setTimeout(showJanken, 2 * 1000);
+					}
 				}
-			//showBarBlock(blockRow, j);
 		}
 		else if (scoreData[j]["score"] > blockRow) {
-			console.log(blockRow);
 			showBarBlock(blockRow, j);
 		}
 	}
 }
 
-function showWinnerName() {
+function showJanken() {
+	var jankenWord = "優勝が複数チームいます！";
+	var jankenWord2 = "じゃんけんで勝者を決めてください！";
 	
+	var jankenText = prepareCanvas();
+	jankenText.font = "34pt Arial";
+	
+	var topSpace = stageHeight * (1/3);
+	var lineHeigth = jankenText.measureText("あ").width;
+	
+	var positionY = topSpace + lineHeigth;
+	var positionX = (stageWidth - lineHeigth * jankenWord.length) / 2;
+	
+	var positionY2 = positionY + lineHeigth + 10;
+	var positionX2 = (stageWidth - lineHeigth * jankenWord2.length) / 2;
+	
+	var sideSpaceb = 10;
+	var topSpaceb = 10;
+	var positionYb = positionY - lineHeigth - topSpaceb / 2;
+	var positionXb = positionX2 - sideSpaceb;
+	var boardWidth = lineHeigth * jankenWord2.length + sideSpaceb * 2;
+	var boardHeight = lineHeigth * 2 + topSpaceb * 2 + 10;
+	
+	var backBoard = prepareCanvas();
+	backBoard.fillStyle = 'rgb(255, 255, 255)';
+	backBoard.shadowColor = 'gray';
+  	backBoard.shadowOffsetX = 2;
+  	backBoard.shadowOffsetY = 2;
+  	backBoard.shadowBlur = 2;
+	backBoard.fillRect(positionXb, positionYb, boardWidth, boardHeight);
+	backBoard.strokeRect(positionXb, positionYb, boardWidth, boardHeight);
+	
+	jankenText.fillStyle = 'rgba(255, 0, 0, 1)';
+	jankenText.fillText(jankenWord, positionX, positionY);
+	jankenText.fillText(jankenWord2, positionX2, positionY2);
+}
+
+function showWinnerName() {
 	var nameText = prepareCanvas();
 	nameText.font = "34pt Arial";
 	
-	var sideSpace = 30;
 	var topSpace = stageHeight * (1/3);
 	var lineHeigth = nameText.measureText("あ").width;
 	
 	var positionY = topSpace + lineHeigth;
-	var positionX = (stageWidth - lineHeigth * (winnerTeamName.length + 7)) / 2;
+	var positionX = (stageWidth - lineHeigth * (winnerTeamName.length + 8)) / 2;
 	
 	var sideSpaceb = 20;
 	var topSpaceb = 10;
 	var positionYb = positionY - lineHeigth - topSpaceb / 2;
 	var positionXb = positionX - sideSpaceb;
-	var boardWidth = lineHeigth * (winnerTeamName.length + 7) + sideSpaceb * 2;
+	var boardWidth = lineHeigth * (winnerTeamName.length + 8) + sideSpaceb * 2;
 	var boardHeight = lineHeigth + topSpaceb * 2;
 	
 	var backBoard = prepareCanvas();
@@ -140,11 +199,7 @@ function showWinnerName() {
 	backBoard.strokeRect(positionXb, positionYb, boardWidth, boardHeight);
 	
 	nameText.fillStyle = 'rgba(255, 0, 0, 1)';
-  	//nameText.shadowColor = 'gray';
-  	//nameText.shadowOffsetX = 2;
-  	//nameText.shadowOffsetY = 2;
-  	//nameText.shadowBlur = 2;
-	nameText.fillText("The Winner is " + winnerTeamName, positionX, positionY);
+	nameText.fillText("The Winner is " + winnerTeamName + "!!", positionX + 20, positionY);
 }
 
 function showBarBlock (blockRow, blockColumn) {
@@ -184,27 +239,5 @@ function showStageArea() {
 	baseline.moveTo(0, stageHeight * (8/10));
 	baseline.lineTo(stageWidth, stageHeight * (8/10));
 	baseline.stroke();
-}
-
-function showIcon(stageHeight, iconSideSpace, iconWidth, iconIconSpace, teamNumber) {
-	var iconImg = new Image();		
-		iconImg.src = "icon" + teamNumber + ".jpg";
-		var icon = prepareCanvas();
-		
-		var positionY = stageHeight * (8/10) + 10;
-		var positionX = iconSideSpace + (iconWidth + iconIconSpace) * teamNumber;
-		var iconHeight = iconImg.height * (iconWidth / iconImg.width);
-				
-		iconImg.onload = function() {
-			icon.drawImage(iconImg, positionX, positionY, iconWidth, iconHeight);
-		}
-	//}
-	/*else {
-		var canvas = prepareCanvas();
-		var context = canvas.getContext('2d');
-		context.font = "20pt Arial";
-		var teamNumberPlus = teamNumber + 1;
-		context.fillText(teamNumberPlus + "班", positionX, positionY);
-	}*/
 }
 
