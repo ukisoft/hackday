@@ -26,8 +26,9 @@ function draw() {
 	
 	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=?",
   	function(data) {
-		data = [{name: "Absence", score: "16"},{name: "team2", score: "14"},{name: "チーム３", score: "14"},{name: "４番目のチーム", score: "14"},{name: "55555", score: "1"}];
+		//data = [{name: "Absence", score: "80"},{name: "team2", score: "14"},{name: "チーム３", score: "14"},{name: "４番目のチーム", score: "14"},{name: "55555", score: "1"}];
 		
+		console.dir(data);
 		scoreData = data;
 		
 		teamMaxNumber = data.length;
@@ -102,7 +103,7 @@ function doBlockRoop (blockRow) {
 				doBlockRoop(blockRow + 1);//得点のMAXを超えたら止める。
 			}
 			timerFlg=false;
-		}, 1 * 1000);
+		}, 1 * 10);
 		return;		
 	}
 }
