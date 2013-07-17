@@ -25,7 +25,7 @@ function draw() {
 	
 	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=?",
   	function(data) {
-		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
+		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "11"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
 		
 		scoreData = data;
 		
@@ -95,13 +95,12 @@ function showBarBlockRow (blockRow) {
 	for (j = 0; j < scoreData.length; j++) {
 		if (scoreData[j]["score"] == blockRow) {
 			restTeamNumber--;
-			console.log("restTeamNumber" + restTeamNumber);
 				if (restTeamNumber == 0) {
 					//[aaaaa//同率がいないかチェック
 					winnerTeamName = scoreData[j]["name"];
 					id = setTimeout(showWinnerName, 2 * 1000);
 				}
-			showBarBlock(blockRow, j);
+			//showBarBlock(blockRow, j);
 		}
 		else if (scoreData[j]["score"] > blockRow) {
 			showBarBlock(blockRow, j);
@@ -130,7 +129,11 @@ function showBarBlock (blockRow, blockColumn) {
 	var positionY = stageHeight * (8/10) - blockHeight * (blockRow + 1);
 	var positionX = blockSideSpace + (blockWidth + blockBlockSpace) * blockColumn;
 	
-	if (blockRow >= 5) {
+	if (blockRow >= 5 && blockRow < 10) {
+		block.fillStyle = 'rgb(255, 100, 100)';
+		block.fillRect(positionX, positionY, blockWidth, blockHeight);
+	}
+	else if (blockRow >= 10) {
 		block.fillStyle = 'rgb(255, 0, 0)';
 		block.fillRect(positionX, positionY, blockWidth, blockHeight);
 	}
