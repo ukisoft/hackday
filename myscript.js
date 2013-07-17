@@ -4,7 +4,13 @@ window.onload = function() {
 }
 
 var restTeamNumber;
+var teamMaxNumber;
 var winnerTeamName;
+var stageWidth = 800;
+var stageHeight = 600;
+
+var scoreData;
+
 
 function draw() {
 	
@@ -12,9 +18,7 @@ function draw() {
   	function(data) {
 		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "8"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
 		
-		var stageWidth = 800;
-		var stageHeight = 600;
-		var teamMaxNumber = data.length;
+		teamMaxNumber = data.length;
 		restTeamNumber = data.length;
 		winnerTeamName = "";
 		
@@ -36,7 +40,6 @@ function draw() {
 			showTeamName(stageHeight, iconSideSpace, iconWidth, iconIconSpace, i, data);
 		}
 		
-		console.log("kiteru?");
 		//バーを表示...test
 		doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, 0, data);
   	});
@@ -70,12 +73,16 @@ function doBlockRoop (stageHeight, blockSideSpace, blockWidth, blockHeight, bloc
 	if (timerFlg == false) {
 		setTimeout( function() {
 			timerFlg = true;
-			if (restTeamNumber > 0) {
+			if (restTeamNumber == teamMaxNumber) {
+				showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData);
+				doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, scoreData);//得点のMAXを超えたら止める。
+			}
+			else if (restTeamNumber > 0) {
 				showBarBlockRow(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);
 				doBlockRoop(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow + 1, scoreData);//得点のMAXを超えたら止める。
 			}
 			timerFlg=false;
-		}, 2000);
+		}, 1 * 1000);
 		return;		
 	}
 }
@@ -84,6 +91,13 @@ function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, 
 	for (j = 0; j < scoreData.length; j++) {
 		if (scoreData[j]["score"] == blockRow) {
 			restTeamNumber--;
+			console.log("restTeamNumber" + restTeamNumber);
+				if (restTeamNumber == 0) {
+					console.log("ii");
+					//[aaaaa//同率がいないかチェック
+					winnerTeamName = scoreData[j]["name"];
+					id = setTimeout(showWinnerName, 2 * 1000);
+				}
 			showBarBlock(stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, j);
 		}
 		else if (scoreData[j]["score"] > blockRow) {
@@ -92,10 +106,26 @@ function showBarBlockRow (stageHeight, blockSideSpace, blockWidth, blockHeight, 
 	}
 }
 
+function showWinnerName() {
+	console.log("aa");
+	
+	var nameText = prepareCanvas();
+	nameText.font = "34pt Arial";
+	
+	var sideSpace = 30;
+	var topSpace = 200;
+	var lineHeight = nameText.measureText("あ").width;
+	
+	var positionY = sideSpace + lineHeight;
+	var positionX = topSpace;
+	
+	nameText.fillText("優勝：" + winnerTeamName, positionX, positionY);
+}
+
 function showBarBlock (stageHeight, blockSideSpace, blockWidth, blockHeight, blockBlockSpace, blockRow, blockColumn) {
 	var block = prepareCanvas();
 	
-	var positionY = stageHeight * (8/10) - blockHeight * blockRow;
+	var positionY = stageHeight * (8/10) - blockHeight * (blockRow + 1);
 	var positionX = blockSideSpace + (blockWidth + blockBlockSpace) * blockColumn;
 	
 	if (blockRow >= 5) {
