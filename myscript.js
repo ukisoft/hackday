@@ -19,13 +19,14 @@ var blockHeight = 20;
 var blockBlockSpace;
 
 var scoreData;
+var firstBlockFlg = true;
 
 
 function draw() {
 	
 	$.getJSON("http://133.208.22.167:8080/events/result/2.json?callback=?",
   	function(data) {
-		data = [{name: "Absence", score: "0"},{name: "team2", score: "6"},{name: "チーム３", score: "11"},{name: "４番目のチーム", score: "4"},{name: "55555", score: "1"}];
+		data = [{name: "Absence", score: "8"},{name: "team2", score: "13"},{name: "チーム３", score: "15"},{name: "４番目のチーム", score: "20"},{name: "55555", score: "1"}];
 		
 		scoreData = data;
 		
@@ -77,9 +78,10 @@ function doBlockRoop (blockRow) {
 	if (timerFlg == false) {
 		setTimeout( function() {
 			timerFlg = true;
-			if (restTeamNumber == teamMaxNumber) {
+			if (firstBlockFlg == true) {
 				showBarBlockRow(blockRow);
 				doBlockRoop(blockRow);//得点のMAXを超えたら止める。
+				firstBlockFlg = false;
 			}
 			else if (restTeamNumber > 0) {
 				showBarBlockRow(blockRow + 1);
@@ -103,6 +105,7 @@ function showBarBlockRow (blockRow) {
 			//showBarBlock(blockRow, j);
 		}
 		else if (scoreData[j]["score"] > blockRow) {
+			console.log(blockRow);
 			showBarBlock(blockRow, j);
 		}
 	}
@@ -112,6 +115,11 @@ function showWinnerName() {
 	
 	var nameText = prepareCanvas();
 	nameText.font = "34pt Arial";
+	nameText.fillStyle = 'rgba(255, 0, 0, 1)';
+  	nameText.shadowColor = 'gray';
+  	nameText.shadowOffsetX = 2;
+  	nameText.shadowOffsetY = 2;
+  	nameText.shadowBlur = 2;
 	
 	var sideSpace = 30;
 	var topSpace = stageHeight * (1/3);
